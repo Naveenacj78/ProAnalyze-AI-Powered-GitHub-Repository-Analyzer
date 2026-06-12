@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="hero">
+	<h1>Decode any repo in minutes</h1>
+	<p>AI-powered repository insights, professional diagrams, and an expert chat.</p>
+	<div class="actions">
+		<a href="{{ url_for('analyze') }}" class="btn primary">Start Analyzing</a>
+		<a href="{{ url_for('chat') }}" class="btn">Ask the AI</a>
+	</div>
+</div>
+
+<div class="grid">
+	<div class="card">
+		<h3>Rapid Understanding</h3>
+		<p>Clear, structured overview with strengths, gaps, and improvement ideas.</p>
+	</div>
+	<div class="card">
+		<h3>Visual Workflows</h3>
+		<p>Auto-generated system and user flow diagrams with Graphviz.</p>
+	</div>
+	<div class="card">
+		<h3>Ask Anything</h3>
+		<p>An AI tuned to your repo answers architecture and implementation questions.</p>
+	</div>
+</div>
+{% endblock %}

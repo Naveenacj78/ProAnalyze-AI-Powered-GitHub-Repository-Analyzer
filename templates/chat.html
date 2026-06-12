@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>AI Chat</h2>
+<form method="post" class="form">
+    <label for="repo_url">Load Repository (URL)</label>
+    <input type="text" id="repo_url" name="repo_url" placeholder="https://github.com/owner/repo">
+    <button type="submit" name="load_repo" class="btn">Load Repo</button>
+    </form>
+
+{% if chat_repo %}
+<div class="card chat-box">
+    <div class="chat-header">
+        <div class="chat-title">Project Chat</div>
+        <div class="muted">{{ chat_repo.repoName }}</div>
+    </div>
+    <div class="chat-body">
+        <div class="chat">
+            {% for m in messages %}
+                {% if m.role == 'user' %}
+                    <div class="chat-row right"><div class="bubble user">{{ m.content }}</div></div>
+                {% elif m.role == 'assistant' %}
+                    <div class="chat-row left"><div class="bubble assistant">{{ m.content }}</div></div>
+                {% else %}
+                    <div class="chat-row"><div class="bubble system">{{ m.content }}</div></div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="chat-footer">
+        <form method="post" style="display:flex;gap:10px;width:100%">
+            <input type="text" class="chat-input" id="message" name="message" placeholder="Type a message..." required />
+            <button type="submit" name="send" class="chat-send">Send</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

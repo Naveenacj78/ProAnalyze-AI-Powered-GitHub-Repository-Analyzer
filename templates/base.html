@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ProAnalyze</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+	<script type="module">
+		import { Graphviz } from 'https://cdn.jsdelivr.net/npm/@hpcc-js/wasm/dist/index.js';
+		async function renderDotDiagrams() {
+			try {
+				const graphviz = await Graphviz.load();
+				document.querySelectorAll('[data-dot]')?.forEach(async el => {
+					const dot = el.textContent || '';
+					try {
+						const svg = await graphviz.layout(dot, "svg", "dot");
+						el.outerHTML = `<div class="diagram">${svg}</div>`;
+					} catch (e) {
+						el.outerHTML = `<pre class="flash danger">Diagram render error</pre>`;
+					}
+				});
+			} catch (e) {
+				console.error('Graphviz wasm load failed', e);
+			}
+		}
+		document.addEventListener('DOMContentLoaded', renderDotDiagrams);
+	</script>
+</head>
+<body>
+	<header class="navbar">
+		<div class="container">
+			<a href="{{ url_for('home') }}" class="brand">ProAnalyze</a>
+			<nav>
+				<a href="{{ url_for('home') }}" class="nav-link{% if request.endpoint=='home' %} active{% endif %}">Home</a>
+				<a href="{{ url_for('analyze') }}" class="nav-link{% if request.endpoint=='analyze' %} active{% endif %}">Analyze</a>
+				<a href="{{ url_for('chat') }}" class="nav-link{% if request.endpoint=='chat' %} active{% endif %}">AI Chat</a>
+			</nav>
+		</div>
+	</header>
+
+	<main class="container">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+				<div class="flash-group">
+					{% for category, message in messages %}
+						<div class="flash {{ category }}">{{ message }}</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		{% endwith %}
+
+		{% block content %}{% endblock %}
+	</main>
+
+	<footer class="footer">
+		<div class="container">© {{ 2025 }} ProAnalyze</div>
+	</footer>
+</body>
+</html>

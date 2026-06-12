@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Analyze Repository</h2>
+<form method="post" class="form">
+	<label for="repo_url">GitHub Repository URL</label>
+	<input type="text" id="repo_url" name="repo_url" placeholder="https://github.com/owner/repo" required>
+	<button type="submit" class="btn primary">Analyze</button>
+</form>
+
+{% if repo_data %}
+<div class="repo-header">
+	<h3>{{ repo_data.name }}</h3>
+	<div class="meta">
+		<span>Language: {{ repo_data.language }}</span>
+		<span>⭐ {{ repo_data.stars }}</span>
+		<span>🍴 {{ repo_data.forks }}</span>
+	</div>
+	{% if analysis %}
+	<form method="post" action="{{ url_for('generate_workflows') }}">
+		<button type="submit" class="btn">Generate Workflow Diagrams</button>
+	</form>
+	{% endif %}
+</div>
+
+{% if workflow %}
+<div class="grid two">
+	<div class="card">
+		<h4>System Workflow</h4>
+		<div class="diagram"><pre data-dot class="dot">{{ workflow.system }}</pre></div>
+	</div>
+	<div class="card">
+		<h4>User Workflow</h4>
+		<div class="diagram"><pre data-dot class="dot">{{ workflow.user }}</pre></div>
+	</div>
+</div>
+{% endif %}
+
+{% if analysis %}
+<div class="grid two">
+	<div class="card">
+		<h4 class="section-title">Project Overview</h4>
+		<div class="prose">{{ analysis | safe | regex_extract('## Project Overview\\n([\\s\\S]*?)(?=\\n## |$)') }}</div>
+	</div>
+	<div class="card">
+		<h4 class="section-title">Key Features</h4>
+		<div class="prose">{{ analysis | safe | regex_extract('## Key Features\\n([\\s\\S]*?)(?=\\n## |$)') }}</div>
+	</div>
+	<div class="card">
+		<h4 class="section-title">Libraries & Dependencies</h4>
+		<div class="prose">{{ analysis | safe | regex_extract('## Libraries & Dependencies\\n([\\s\\S]*?)(?=\\n## |$)') }}</div>
+	</div>
+	<div class="card">
+		<h4 class="section-title">Project Workflow</h4>
+		<div class="prose">{{ analysis | safe | regex_extract('## Project Workflow\\n([\\s\\S]*?)(?=\\n## |$)') }}</div>
+	</div>
+	<div class="card">
+		<h4 class="section-title">Implementation Details</h4>
+		<div class="prose">{{ analysis | safe | regex_extract('## Implementation Details\\n([\\s\\S]*?)(?=\\n## |$)') }}</div>
+	</div>
+	<div class="card">
+		<h4 class="section-title">Project Strengths</h4>
+		<div class="prose">{{ analysis | safe | regex_extract('## Project Strengths\\n([\\s\\S]*?)(?=\\n## |$)') }}</div>
+	</div>
+	<div class="card">
+		<h4 class="section-title">Areas for Improvement</h4>
+		<div class="prose">{{ analysis | safe | regex_extract('## Areas for Improvement\\n([\\s\\S]*?)(?=\\n## |$)') }}</div>
+	</div>
+</div>
+{% endif %}
+
+
+<div class="card">
+	<h4>Files Analyzed</h4>
+	{% if repo_data.files %}
+	<ul class="file-list">
+		{% for f in repo_data.files %}
+		<li><span class="path">{{ f.path }}</span><span class="size">{{ (f.size / 1024) | round(1) }} KB</span></li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>No files found.</p>
+	{% endif %}
+</div>
+{% endif %}
+{% endblock %}
